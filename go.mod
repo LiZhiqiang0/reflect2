@@ -1,3 +1,3 @@
-module github.com/modern-go/reflect2
+module github.com/LiZhiqiang0/reflect2
 
-go 1.12
+go 1.18

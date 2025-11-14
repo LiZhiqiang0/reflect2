@@ -3,7 +3,6 @@ package reflect2
 import (
 	"reflect"
 	"runtime"
-	"sync"
 	"unsafe"
 )
 
@@ -131,13 +130,13 @@ var ConfigSafe = Config{UseSafeImplementation: true}.Froze()
 
 type frozenConfig struct {
 	useSafeImplementation bool
-	cache                 *sync.Map
+	cache                 *LinerRCU
 }
 
 func (cfg Config) Froze() *frozenConfig {
 	return &frozenConfig{
 		useSafeImplementation: cfg.UseSafeImplementation,
-		cache:                 new(sync.Map),
+		cache:                 NewLinerRCU(),
 	}
 }
 
@@ -282,6 +281,7 @@ func likePtrType(typ reflect.Type) bool {
 // output depends on the input.  noescape is inlined and currently
 // compiles down to zero instructions.
 // USE CAREFULLY!
+//
 //go:nosplit
 func NoEscape(p unsafe.Pointer) unsafe.Pointer {
 	x := uintptr(p)
